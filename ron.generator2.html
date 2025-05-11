@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Battleship Gameboard</title>
+  <style>
+    .carrier { background-color: navy; color: white; }
+    .battleship { background-color: green; color: white; }
+    .cruiser { background-color: red; color: white; }
+    .submarine { background-color: gray; color: white; }
+    .destroyer { background-color: maroon; color: white; }
+    .water { background-color: lightblue; }
+    .x { background-color: yellow; }
+    td { width: 30px; height: 30px; text-align: center; font-size: 20px; }
+    table { border-collapse: collapse; }
+    td { border: 1px solid #ddd; }
+    th { width: 30px; height: 30px; }
+  </style>
+</head>
+<body>
+<script>
+  function generateBoard() {
+    const shipTypes = ['carrier', 'battleship', 'x', 'cruiser', 'cruiser', 'submarine', 'destroyer'];
+    const shipLengths = [5, 4, 1, 3, 3, 3, 2];
+    const board = new Array(100).fill('water');
+    const directions = ['L', 'R', 'U', 'D'];
+    const letters = "ABCDEFGHIJ";
+
+    function placeShip(length, type) {
+      let placed = false;
+      while (!placed) {
+        const direction = directions[Math.floor(Math.random() * directions.length)];
+        const row = Math.floor(Math.random() * 10);
+        const col = Math.floor(Math.random() * 10);
+        let fits = true;
+
+        for (let i = 0; i < length; i++) {
+          const currentRow = direction === 'U' ? row - i : direction === 'D' ? row + i : row;
+          const currentCol = direction === 'L' ? col - i : direction === 'R' ? col + i : col;
+          if (currentRow < 0 || currentRow > 9 || currentCol < 0 || currentCol > 9 || board[currentRow * 10 + currentCol] !== 'water') {
+            fits = false;
+            break;
+          }
+        }
+
+        if (fits) {
+          for (let i = 0; i < length; i++) {
+            const currentRow = direction === 'U' ? row - i : direction === 'D' ? row + i : row;
+            const currentCol = direction === 'L' ? col - i : direction === 'R' ? col + i : col;
+            board[currentRow * 10 + currentCol] = type;
+          }
+          placed = true;
+        }
+      }
+    }
+
+    shipTypes.forEach((type, index) => placeShip(shipLengths[index], type));
+
+    // Display the board with headers
+    let output = '<table>';
+    
+    // Add column headers
+    output += '<tr><th></th>';
+    for (let i = 1; i <= 10; i++) {
+      output += `<th>${i}</th>`;
+    }
+    output += '</tr>';
+
+    for (let i = 0; i < 10; i++) {
+      output += `<tr><th>${letters[i]}</th>`; // Add row headers
+      for (let j = 0; j < 10; j++) {
+        const cell = board[i * 10 + j];
+        output += `<td class="${cell}">${cell[0].toUpperCase()}</td>`;
+      }
+      output += '</tr>';
+    }
+    output += '</table>';
+    document.body.innerHTML = output;
+  }
+
+  window.onload = generateBoard;
+</script>
+</body>
+</html>
